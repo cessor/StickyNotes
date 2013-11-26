@@ -1,0 +1,160 @@
+<style>
+
+.box {
+	min-width: 100px;
+	min-height: 100px;
+	margin: 20px;
+	display: block;
+	width: 200px;
+}
+
+.note {
+	/* box-shadow: h-shadow v-shadow blur spread color inset; */
+	box-shadow: 5px 5px 8px #888;
+	background-color: lime;
+}
+
+.box-header {
+	min-height: 30px;
+	background-color: #e0e0e0;
+	text-align: right;
+	line-height: 30px;
+}
+
+.box-header a {
+	display: block;
+	margin: 4px;
+	width: 20px;
+	height: 20px;
+	line-height: 20px;
+	font-size: 24px;
+	text-align: center;
+	font-weight: bolder;
+	font-family: "Helvetica Neue LT", "Helvetica", "Arial", "sans-serif";
+	text-decoration: none;
+	color: #666;
+	border-radius: 5px;
+}
+
+.box-header a:link, .box-header a:visited {
+	border: 1px solid #e0e0e0;
+}
+
+.box-header a:hover, .box-header a:active {
+	border: 1px solid #aaa;
+	background-color: #ccc;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.hidden { 
+	display: none; 
+}
+
+.note-text {
+	margin: 0;
+	background: none;
+	border: none;
+	font-family: "Helvetica", "Arial", "sans-serif";
+	font-size: 24px;
+	width: 100%;
+	font-style: italic;
+	resize: none;
+	overflow: auto;
+	outline: none;
+	padding: 5px;
+}
+
+.background-gray {
+	background: #ffffff; /* Old browsers */
+	background: -moz-linear-gradient(top,  #ffffff 0%, #e0e0e0 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e0e0e0)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #ffffff 0%,#e0e0e0 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #ffffff 0%,#e0e0e0 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #ffffff 0%,#e0e0e0 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #ffffff 0%,#e0e0e0 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e0e0e0',GradientType=0 ); /* IE6-9 */
+}
+
+</style>
+<link rel="stylesheet" href="file:///C:/Users/Johannes/Desktop/StickyNotes/css/jquery-ui-1.10.3.custom.min.css" />
+
+<div class="box note background-gray">
+	<div class="box-header">
+		<a href="#" class="left add hidden">&plus;</a>
+		<a href="#" class="right remove hidden">&times;</a>
+	</div>
+	<textarea class="note-text"></textarea>
+</div>
+
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="file:///C:/Users/Johannes/Desktop/StickyNotes/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script>
+	$(function() {
+
+		var markup = 
+			'<div class="box note background-gray">' +
+			'<div class="box-header">' +
+				'<a href="#" class="left add hidden">&plus;</a>' +
+				'<a href="#" class="right remove hidden">&times;</a>' +
+			'</div><textarea class="note-text"></textarea></div>';
+
+		var spawn = function () {
+			$("body").append(makeNote($(markup)));
+		};
+
+		var remove = function () {
+			$(this).parent().parent().remove();
+		};
+
+		var resizeTextArea = function () { 
+			var self = $(this);
+			var spaceToGrab = 60;
+			self.find('.note-text').height(self.height() - 45); 
+		};
+
+		var hideButtons = function (element) {
+			$(element).find("a").hide();
+		};
+
+		var showButtons = function (element) {
+			$(element).find("a").show();
+		};
+
+		var save = function (id, value) {
+			console.log(id);
+			console.log(value);
+		};
+
+		var makeNote = function (element) {
+			var $note = $(element);
+			$note.resizable({ handles: "se"});
+			$note.draggable({ handle: ".box-header" });
+
+			$text = $note.find('textarea');
+			$text.focusout(function (e) {
+				save($(this).oid, $(this).val());
+			});
+			$note.click(function () { 
+				$(this).find('textarea').focus();		
+			});
+
+			$note.mouseover(function (){ showButtons(this); });
+			$note.mouseout(function (){ hideButtons(this); });
+
+			$note.find(".add").click(spawn);
+			$note.find(".remove").click(remove);
+			$note.resize(resizeTextArea);
+			hideButtons($note)
+			return $note;
+		};
+
+		$(".note").each(function (i,e) { makeNote(e); });
+	});
+</script>
